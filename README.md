@@ -4,8 +4,8 @@ SIGNAL: a 2-minute mini game where your choices reveal how humanistic psychology
 
 A short interactive game about how people behave online, built for the course *Advanced Theories in Cyberpsychology*.
 
-**Play it:** https://YOUR-USERNAME.github.io/REPOSITORY-NAME/activity.html
-
+**Play it:** [https://YOUR-USERNAME.github.io/REPOSITORY-NAME/activity.html
+](https://zainabnawabi.github.io/signal-cyberpsychology-game/activity.html)
 ## What is it?
 Players move through seven quick levels and make fast choices: how to show up online, what to reach for, how to react to a scam, to a friend who was embarrassed, to screen-time rules, to new security rules, and to an online troll. Players are not told what is being measured. At the end, the game reveals a "signal type" and explains the psychology behind it.
 
