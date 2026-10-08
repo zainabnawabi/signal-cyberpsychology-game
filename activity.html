@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIGNAL: A 2-Minute Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12040A;--panel:rgba(74,14,31,.45);--ink:#FDEBF0;--mute:#CFA3AF;--rose:#FF4D6D;--wine:#8E1B3A;--gold:#FFC98B;--ice:#8FD3FF;--vio:#B28DFF;--edge:rgba(255,77,109,.35);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(1100px 650px at 85% -10%,#4A0E1F,transparent 60%),radial-gradient(800px 600px at 0 100%,#34091A,transparent 55%),var(--bg);color:var(--ink);font:18px/1.5 "Space Grotesk",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:22px 18px 60px}
+h1,h2,.o,.num{font-family:Orbitron,"Space Grotesk",sans-serif}
+p{margin:0 0 12px}.mute{color:var(--mute)}
+section[hidden]{display:none}
+.title{font-size:clamp(3.2rem,16vw,6rem);font-weight:800;margin:30px 0 6px;letter-spacing:.08em;text-align:center;position:relative;text-shadow:0 0 40px rgba(255,77,109,.7)}
+.title::before,.title::after{content:attr(data-t);position:absolute;inset:0;opacity:.7}
+.title::before{color:var(--ice);transform:translate(3px,0);clip-path:inset(0 0 55% 0);animation:gl 3.2s infinite steps(1)}
+.title::after{color:var(--rose);transform:translate(-3px,0);clip-path:inset(55% 0 0 0);animation:gl 2.7s infinite steps(1) reverse}
+@keyframes gl{0%,90%{transform:translate(0)}92%{transform:translate(5px,-2px)}95%{transform:translate(-5px,2px)}}
+.sub{text-align:center;color:var(--gold);font:500 1rem Orbitron,sans-serif;letter-spacing:.12em;margin-bottom:26px}
+.btn{display:block;width:100%;background:linear-gradient(90deg,#B01E45,#FF4D6D);color:#fff;border:0;border-radius:14px;padding:16px;font:700 1.05rem Orbitron,sans-serif;letter-spacing:.08em;cursor:pointer;box-shadow:0 0 34px rgba(255,77,109,.5);transition:transform .2s}
+.btn:hover{transform:scale(1.03)}
+.btn:focus-visible,.o:focus-visible,#mute:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.intro{min-height:70vh;display:flex;flex-direction:column;justify-content:center;gap:18px;cursor:pointer;text-align:center}
+.intro p{font:500 clamp(1.3rem,5vw,1.9rem) Orbitron,sans-serif;opacity:0;animation:fade 1.2s forwards;margin:0}
+.intro p:nth-child(2){animation-delay:1.6s}.intro p:nth-child(3){animation-delay:3.2s;color:var(--rose);text-shadow:0 0 24px var(--rose)}
+@keyframes fade{to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hud{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.hud b{font:800 1rem Orbitron,sans-serif;color:var(--gold);min-width:120px}
+.dots{flex:1;display:flex;gap:5px}.dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)}.dots i.on{background:var(--rose);box-shadow:0 0 10px var(--rose)}
+#mute{background:none;border:1px solid var(--edge);color:var(--ink);border-radius:8px;padding:2px 8px;cursor:pointer;font-size:1rem}
+.tag{display:inline-block;color:var(--rose);font:700 .85rem Orbitron,sans-serif;letter-spacing:.15em;margin-top:14px}
+.lv{font-size:clamp(1.6rem,6vw,2.2rem);font-weight:800;margin:4px 0 10px}
+.stage{animation:rise .5s both}
+.chat{background:rgba(255,255,255,.07);border-left:4px solid var(--ice);border-radius:6px 18px 18px 18px;padding:12px 16px;margin:6px 0 12px}
+.chat b{color:var(--ice);font-size:.85rem}.chat p{margin:2px 0 0;font-size:1.1rem}
+.tbar{height:4px;background:rgba(255,255,255,.1);margin:10px 0 14px;border-radius:2px;overflow:hidden}
+.tbar i{display:block;height:100%;width:100%;background:var(--gold)}
+.o{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--panel);color:var(--ink);border:1.5px solid var(--edge);border-radius:16px;padding:14px 16px;margin-bottom:10px;font:500 .95rem/1.35 "Space Grotesk",sans-serif;cursor:pointer;backdrop-filter:blur(8px);transition:transform .2s,box-shadow .2s,border-color .2s}
+.o span{font-size:1.9rem;flex:none}
+.o:hover:not(:disabled){border-color:var(--rose);transform:translateX(6px);box-shadow:0 0 24px rgba(255,77,109,.4)}
+.o:disabled{opacity:.4}.o.pk{opacity:1;border-color:var(--gold);box-shadow:0 0 24px rgba(255,201,139,.5)}
+#arena{position:relative;height:52vh;min-height:300px;overflow:hidden;border:1.5px solid var(--edge);border-radius:24px;background:rgba(74,14,31,.3);touch-action:manipulation;margin-top:10px}
+.orb{position:absolute;bottom:-90px;border:0;border-radius:50%;width:76px;height:76px;color:#fff;font:700 .72rem/1.15 "Space Grotesk",sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fl var(--d) linear forwards;box-shadow:0 0 26px var(--c);background:radial-gradient(circle at 35% 30%,#fff8,var(--c) 55%,#000a)}
+.orb em{font-style:normal;font-size:1.5rem}
+@keyframes fl{to{transform:translateY(calc(-1 * var(--r)))}}
+.orb.pop{animation:none;transform:scale(1.8);opacity:0;transition:transform .25s,opacity .25s}
+.flash{position:fixed;left:50%;top:30%;transform:translateX(-50%);font:800 1.4rem Orbitron,sans-serif;color:var(--gold);text-shadow:0 0 20px var(--rose);pointer-events:none;animation:up .9s forwards;z-index:5}
+@keyframes up{to{transform:translate(-50%,-70px);opacity:0}}
+.boss{text-align:center;margin:8px 0}
+#troll{font-size:5.5rem;display:inline-block;transition:transform .6s,opacity .6s;filter:drop-shadow(0 0 20px var(--rose))}
+.hp{height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;max-width:260px;margin:4px auto}.hp i{display:block;height:100%;width:100%;background:var(--rose);transition:width .8s}
+.say{text-align:center;font-style:italic;color:var(--gold);min-height:1.6em}
+.shake{animation:sh .4s}
+@keyframes sh{20%{transform:translate(-8px,3px)}40%{transform:translate(8px,-3px)}60%{transform:translate(-5px,2px)}}
+.scan{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px}
+.ring{width:170px;height:170px;border-radius:50%;border:3px dashed var(--gold);position:relative;animation:sp 3s linear infinite}
+.ring::after{content:"";position:absolute;inset:18px;border-radius:50%;border:3px solid var(--rose);border-top-color:transparent;animation:sp 1s linear infinite reverse}
+@keyframes sp{to{transform:rotate(360deg)}}
+.panel{background:var(--panel);border:1.5px solid var(--edge);border-radius:20px;padding:16px 18px;margin-bottom:14px;backdrop-filter:blur(8px);animation:rise .6s both}
+h2.h{font-size:1rem;font-weight:500;color:var(--gold);letter-spacing:.08em;margin:26px 0 10px}
+.arch{text-align:center;padding:26px 18px;border-color:var(--rose);box-shadow:0 0 50px rgba(255,77,109,.35)}
+.arch .big{font-size:4.2rem;display:block;animation:pu 3s ease-in-out infinite}
+@keyframes pu{50%{transform:scale(1.12)}}
+.arch h1{font-size:clamp(1.7rem,7vw,2.4rem);margin:6px 0;text-shadow:0 0 26px rgba(255,77,109,.6)}
+.bar{margin-bottom:14px}.bar b{display:flex;justify-content:space-between}
+.m{height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;margin:6px 0}
+.m i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--wine),var(--rose),var(--gold));box-shadow:0 0 12px var(--rose);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+small{color:var(--mute);font-size:.85rem;line-height:1.4;display:block}
+.rung.top{border-color:var(--gold);box-shadow:0 0 28px rgba(255,201,139,.4)}
+ul{padding-left:1.1em;margin:0}li{margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.intro p{opacity:1}}
+</style></head><body><canvas id="bg" aria-hidden="true"></canvas><main>
+
+<section id="start">
+<h1 class="title" data-t="SIGNAL">SIGNAL</h1>
+<p class="sub">A 2-MINUTE GAME</p>
+<p style="text-align:center">Make fast choices. Don't overthink. Go with your gut.</p>
+<p class="mute" style="text-align:center">7 levels. Sound on is better. Tap the speaker to mute.</p>
+<button class="btn" id="enter">ENTER THE NETWORK</button>
+</section>
+
+<section id="intro" class="intro" hidden><p>Billions of signals.</p><p>Most are never really heard.</p><p>You are one of them.</p></section>
+
+<section id="game" hidden>
+<div class="hud"><b id="sig">SIGNAL 0</b><div class="dots" id="dots"></div><button id="mute" aria-label="Toggle sound">🔊</button></div>
+<div id="stage" class="stage"></div>
+</section>
+
+<section id="scan" class="scan" hidden><div class="ring"></div><h2 class="lv" id="scanTx">Decoding your signal…</h2></section>
+
+<section id="result" hidden>
+<div class="panel arch"><span class="big" id="aE"></span><small>YOUR SIGNAL TYPE</small><h1 id="aN"></h1><p id="aD" style="margin:0"></p></div>
+<h2 class="h">YOUR 5 POWER METERS</h2><div id="bars"></div>
+<h2 class="h">WHAT YOU REACHED FOR</h2><p class="mute">In the orb round, you collected different things. This shows what your mind was hungry for.</p><div id="needs"></div>
+<h2 class="h">PLOT TWIST: THE GAME WAS A TEST</h2>
+<div class="panel"><p>Every level secretly measured how you act online, using three big ideas from psychology:</p>
+<ul>
+<li><b>Carl Rogers:</b> People grow when they can be their real selves and are accepted without judgment. Levels 1, 4 and 7.</li>
+<li><b>Abraham Maslow:</b> We all have needs in layers: safety, belonging, recognition and growth. Level 2, the orb round.</li>
+<li><b>Self-Determination Theory:</b> Humans need three things to thrive: choice (autonomy), feeling capable (competence) and feeling close to others (relatedness). Levels 3, 5 and 6.</li></ul></div>
+<div class="panel"><b>Why it matters for cybersecurity</b><p class="mute" style="margin:6px 0 0">People who feel accepted report their mistakes. People who feel in control follow the rules. People who feel capable spot scams. Good security protects the human, not just the computer.</p></div>
+<button class="btn" id="again">PLAY AGAIN</button>
+</section>
+
+<script>
+var $=function(x){return document.getElementById(x)},calm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+var SC=[
+{tag:"LEVEL 1",title:"Spawn in",text:"You enter the network. How does your avatar show up?",o:[["🙂","Just me. No filter.",{real:2}],["✨","Glow-up me: perfect lighting, perfect life.",{esteem:1}],["🕶","Mystery account. Nobody knows me.",{real:1,safe:1}]]},
+{rush:1,tag:"LEVEL 2",title:"Signal rush",text:"Orbs are flying up. Tap the ones you want. 15 seconds!"},
+{tag:"LEVEL 3",title:"Incoming!",msg:["IT Support","URGENT: confirm your password in 60 seconds or your account will be deleted."],o:[["⌨️","Type the password, fast.",{}],["🔍","Check who really sent it.",{comp:2,safe:1}],["💬","Ask a friend if it looks off.",{rel:1,comp:1,belong:1}]]},
+{tag:"LEVEL 4",title:"Plot twist",msg:["Group chat","lol Sam fell for the same scam 😂😂 screenshot going around"],o:[["😂","Add a laughing emoji.",{}],["🤝","DM Sam: \"Happens to everyone. Want help fixing it?\"",{warm:2,rel:1,belong:1}],["🙈","Say nothing.",{warm:1}]]},
+{tag:"LEVEL 5",title:"Screen time",text:"Your app says you're online too much. Which one would you accept?",o:[["🔒","The app locks you out at 10pm. No changes allowed.",{}],["🎚","You set your own limit and get a gentle nudge.",{auto:2}],["♾","No limits. No reminders.",{auto:1}]]},
+{tag:"LEVEL 6",title:"New rules drop",text:"Your school or workplace adds new security steps. How should they roll it out?",o:[["📜","Just announce it. Everyone must follow.",{}],["💡","Explain why, then let people help shape it.",{auto:2,comp:1}],["🤷","Make it optional. Nobody checks.",{auto:1}]]},
+{boss:1,tag:"FINAL BOSS",title:"The Troll",msg:["@troll_4829","your post is so cringe 😂"],o:[["🔥","Roast them back.",{esteem:1},"OH SO YOU'RE MAD? 😈","grow"],["🛡","Block and move on.",{auto:1,safe:1},"...","fade"],["💬","Reply: \"Rough day? Hope it gets better.\"",{warm:2,real:1,belong:1},"...sorry. Bad day. Your post was fine.","shrink"]]}
+];
+var CHOICE_TIME=25,RUSH_TIME=15;/* seconds: change these to adjust the timers */
+var S,i,sg,tm,au;
+function reset(){S={real:0,warm:0,auto:0,comp:0,rel:0,n:{safe:0,belong:0,esteem:0,grow:0},orb:{esteem:0,belong:0,grow:0,safe:0}};i=0;sg=0}
+function show(id){["start","intro","game","scan","result"].forEach(function(s){$(s).hidden=s!==id});window.scrollTo(0,0)}
+function tone(f){if($("mute").dataset.m||!window.AudioContext)return;au=au||new AudioContext();var o=au.createOscillator(),g=au.createGain();o.frequency.value=f;o.type="triangle";g.gain.value=.08;g.gain.exponentialRampToValueAtTime(.001,au.currentTime+.25);o.connect(g);g.connect(au.destination);o.start();o.stop(au.currentTime+.25)}
+function flash(t){var e=document.createElement("div");e.className="flash";e.textContent=t;document.body.appendChild(e);setTimeout(function(){e.remove()},900)}
+function hud(){$("sig").textContent="SIGNAL "+sg;$("dots").innerHTML=SC.map(function(_,k){return'<i class="'+(k<=i?'on':'')+'"></i>'}).join("")}
+function add(e){for(var k in e){if(k in S.n)S.n[k]+=e[k];else S[k]+=e[k]}}
+function go(){sp=16;i++;i>=SC.length?scan():render()}
+function render(){var s=SC[i];hud();clearTimeout(tm);var h='<span class="tag">'+s.tag+'</span><h2 class="lv">'+s.title+'</h2>';
+if(s.boss)h+='<div class="boss"><div id="troll">👹</div><div class="hp"><i id="hp"></i></div></div><div class="say" id="say"></div>';
+if(s.msg)h+='<div class="chat"><b>'+s.msg[0]+'</b><p>'+s.msg[1]+'</p></div>';if(s.text)h+='<p class="mute">'+s.text+'</p>';
+var st=$("stage");st.style.animation="none";void st.offsetWidth;st.style.animation="";
+if(s.rush){st.innerHTML=h+'<div class="tbar"><i id="tb"></i></div><div id="arena"></div>';rush();return}
+h+='<div class="tbar"><i id="tb"></i></div><div>'+s.o.map(function(o,k){return'<button class="o" data-k="'+k+'"><span>'+o[0]+'</span>'+o[1]+'</button>'}).join("")+'</div>';st.innerHTML=h;
+var t=$("tb");t.style.transition="width "+CHOICE_TIME+"s linear";setTimeout(function(){t.style.width="0"},30);
+tm=setTimeout(function(){flash("TIME!");go()},CHOICE_TIME*1000);
+Array.prototype.forEach.call(st.querySelectorAll(".o"),function(b){b.onclick=function(){pick(+b.dataset.k)}})}
+function pick(k){clearTimeout(tm);var s=SC[i],o=s.o[k];add(o[2]);sg+=12;hud();tone(520+k*140);if(navigator.vibrate)navigator.vibrate(30);flash("+12");
+Array.prototype.forEach.call(document.querySelectorAll(".o"),function(b,j){b.disabled=true;if(j===k)b.classList.add("pk")});
+var d=650;if(s.boss){d=2200;var tr=$("troll");$("say").textContent=o[3];if(o[4]==="grow"){tr.style.transform="scale(1.5)";$("hp").style.width="100%";document.body.classList.add("shake");setTimeout(function(){document.body.classList.remove("shake")},400)}
+else if(o[4]==="fade"){tr.style.opacity=".1";$("hp").style.width="0"}else{tr.style.transform="scale(.55)";$("hp").style.width="15%";tr.textContent="🥺"}}
+setTimeout(go,d)}
+var KINDS=[["esteem","❤️","2.4k likes","#FFC98B"],["belong","💬","u ok? – Sam","#FF4D6D"],["grow","📚","new skill","#8FD3FF"],["safe","🛡","secure","#B28DFF"]];
+function rush(){var a=$("arena"),t=$("tb"),n=0,H=a.clientHeight;t.style.transition="width "+RUSH_TIME+"s linear";setTimeout(function(){t.style.width="0"},30);
+var iv=setInterval(function(){var k=KINDS[Math.floor(Math.random()*4)],b=document.createElement("button");b.className="orb";b.style.cssText="left:"+(Math.random()*(a.clientWidth-80))+"px;--c:"+k[3]+";--d:"+(2.8+Math.random()*1.4)+"s;--r:"+(H+110)+"px";
+b.innerHTML="<em>"+k[1]+"</em>"+k[2];b.onpointerdown=function(){if(b.classList.contains("pop"))return;b.classList.add("pop");S.orb[k[0]]++;sg+=10;hud();tone(660+Math.random()*300);if(navigator.vibrate)navigator.vibrate(15);setTimeout(function(){b.remove()},260)};
+b.addEventListener("animationend",function(){b.remove()});a.appendChild(b)},480);
+tm=setTimeout(function(){clearInterval(iv);var T=0;for(var k in S.orb)T+=S.orb[k];if(T){for(var k in S.orb)S.n[k]+=S.orb[k]/T*3;S.rel+=S.orb.belong/T*2;S.comp+=S.orb.grow/T*2}go()},RUSH_TIME*1000+400)}
+function scan(){show("scan");var L=["Decoding your signal…","Reading your choices…","Building your profile…"],q=0;var iv=setInterval(function(){$("scanTx").textContent=L[++q%3]},900);tone(300);setTimeout(function(){clearInterval(iv);result()},2800)}
+var MAX={real:3,warm:4,auto:5,comp:5,rel:4},AR={real:["🪞","The Honest Signal","You show up as yourself, even online. That makes you easy to trust."],warm:["🔥","The Warm Beacon","You lift people up instead of putting them down. You make the network feel safer."],auto:["🧭","The Free Navigator","You want to steer your own life. You follow rules best when you understand why."],comp:["⚡","The Skill Hunter","You feel best when you are getting good at things, and you spot traps fast."],rel:["🌐","The Connector","You reach for people first. Your strength is making others feel they belong."]};
+var BN={real:["Being real","Carl Rogers: your inside and outside match (congruence)."],warm:["Warmth","Carl Rogers: accepting people without judging them."],auto:["Choice","Self-Determination Theory: autonomy, steering your own life."],comp:["Skill","Self-Determination Theory: competence, feeling capable."],rel:["Connection","Self-Determination Theory: relatedness, feeling close to others."]};
+var ND={safe:["🛡","Safety","You protect yourself first. A safe base lets you explore."],belong:["💬","Belonging","You reach for people. Connection is your fuel."],esteem:["❤️","Recognition","You are drawn to likes and praise. Fine in small doses, best with real connection."],grow:["📚","Growth","You chase learning and levelling up."]};
+function result(){show("result");var P={},top="real";for(var k in MAX){P[k]=Math.min(1,S[k]/MAX[k]);if(P[k]>P[top])top=k}
+$("aE").textContent=AR[top][0];$("aN").textContent=AR[top][1];$("aD").textContent=AR[top][2];
+$("bars").innerHTML=Object.keys(MAX).map(function(k){return'<div class="panel bar"><b><span>'+BN[k][0]+'</span><span>'+Math.round(P[k]*100)+'%</span></b><div class="m"><i data-w="'+P[k]*100+'"></i></div><small>'+BN[k][1]+'</small></div>'}).join("");
+var tn="safe",tot=0;for(var k in S.n){tot+=S.n[k];if(S.n[k]>S.n[tn])tn=k}
+$("needs").innerHTML=["safe","belong","esteem","grow"].map(function(k){var f=tot?S.n[k]/tot:0;return'<div class="panel bar rung'+(k===tn?' top':'')+'"><b><span>'+ND[k][0]+' '+ND[k][1]+'</span><span>'+Math.round(f*100)+'%</span></b><div class="m"><i data-w="'+f*100+'"></i></div>'+(k===tn?'<small>'+ND[k][2]+'</small>':'')+'</div>'}).join("");
+setTimeout(function(){document.querySelectorAll(".m i").forEach(function(e){e.style.width=e.dataset.w+"%"})},200);tone(780)}
+$("enter").onclick=function(){reset();show("intro");tone(220);var d=setTimeout(begin,5600);$("intro").onclick=function(){clearTimeout(d);begin()}};
+function begin(){$("intro").onclick=null;show("game");render()}
+$("again").onclick=function(){show("start")};
+$("mute").onclick=function(){var m=$("mute");m.dataset.m=m.dataset.m?"":"1";m.textContent=m.dataset.m?"🔇":"🔊"};
+/* starfield with warp */
+var sp=.5;(function(){var c=$("bg"),x=c.getContext("2d"),W,H,S2=[];
+function size(){var d=devicePixelRatio||1;W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);S2=[];for(var k=0;k<160;k++)S2.push({x:(Math.random()-.5)*2*W,y:(Math.random()-.5)*2*H,z:Math.random()*W,h:Math.random()<.3})}
+function f(){x.clearRect(0,0,W,H);sp+=((calm?0:.5)-sp)*.06;S2.forEach(function(s){var z0=s.z;s.z-=sp;if(s.z<1){s.z=W;s.x=(Math.random()-.5)*2*W;s.y=(Math.random()-.5)*2*H;z0=s.z}
+var a=s.x/s.z*W/2+W/2,b=s.y/s.z*W/2+H/2,a0=s.x/z0*W/2+W/2,b0=s.y/z0*W/2+H/2,r=(1-s.z/W)*2.2+.3;x.strokeStyle=s.h?"rgba(255,201,139,.85)":"rgba(255,77,109,.8)";x.lineWidth=r;x.beginPath();x.moveTo(a0,b0);x.lineTo(a+.01,b);x.stroke()});if(!calm)requestAnimationFrame(f)}
+addEventListener("resize",size);size();f()})();
+</script></main></body></html>
